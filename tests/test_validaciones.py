@@ -134,3 +134,31 @@ def test_envio_es_gratis_cuando_el_subtotal_es_25000_o_mas(subtotal):
 def test_calcular_envio_devuelve_un_entero(subtotal):
     # La firma indica -> int; se verifica el tipo, no solo el valor (0.0 == 0 es True).
     assert type(calcular_envio(subtotal)) is int
+
+
+# ---------------------------------------------------------------------------
+# calcular_envio: entradas inválidas
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "subtotal",
+    [-0.01, -1, -25_000],
+    ids=["centimo_negativo", "menos_uno", "negativo_igual_al_umbral"],
+)
+def test_subtotal_negativo_lanza_value_error(subtotal):
+    # match= verifica además que el mensaje explique la causa del error.
+    with pytest.raises(ValueError, match="negativo"):
+        calcular_envio(subtotal)
+
+
+@pytest.mark.parametrize(
+    "subtotal",
+    [float("nan"), float("inf"), float("-inf")],
+    ids=["nan", "infinito_positivo", "infinito_negativo"],
+)
+def test_subtotal_no_finito_lanza_value_error(subtotal):
+    # NaN e infinito no representan un monto real de carrito: sin control
+    # explícito, NaN cobraría envío y +inf lo daría gratis.
+    with pytest.raises(ValueError, match="número válido"):
+        calcular_envio(subtotal)
