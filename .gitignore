@@ -1,0 +1,20 @@
+# Entornos virtuales (cada persona crea el suyo con `python -m venv .venv`)
+venv/
+.venv/
+env/
+
+# Archivos generados por Python y pytest
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Configuración local de editores y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Variables de entorno locales (p. ej. URL del servidor Appium)
+.env
