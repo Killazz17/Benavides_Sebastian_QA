@@ -1,0 +1,4 @@
+# Versiones fijadas para que la instalación sea reproducible en cualquier máquina.
+# Ambas requieren Python >= 3.10.
+pytest==9.2.0
+Appium-Python-Client==6.1.6
