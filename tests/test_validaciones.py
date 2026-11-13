@@ -9,7 +9,7 @@ Técnicas aplicadas:
 
 import pytest
 
-from shopgo.validaciones import validar_password
+from shopgo.validaciones import calcular_envio, validar_password
 
 
 def crear_password(longitud: int) -> str:
@@ -105,3 +105,32 @@ def test_password_que_no_es_texto_es_invalida_sin_lanzar_excepcion(valor):
     # La firma promete devolver bool, así que una entrada inválida
     # se rechaza con False en lugar de romper con TypeError.
     assert validar_password(valor) is False
+
+
+# ---------------------------------------------------------------------------
+# calcular_envio: valores límite (regla: envío gratis desde ₡25 000)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "subtotal",
+    [0, 0.01, 24_999, 24_999.99],
+    ids=["cero", "un_centimo", "24999_justo_bajo_umbral", "24999_99_centimo_bajo_umbral"],
+)
+def test_envio_cuesta_2500_cuando_el_subtotal_es_menor_a_25000(subtotal):
+    assert calcular_envio(subtotal) == 2_500
+
+
+@pytest.mark.parametrize(
+    "subtotal",
+    [25_000, 25_000.01, 25_001, 1_000_000],
+    ids=["25000_umbral_exacto", "25000_01_centimo_sobre_umbral", "25001_justo_sobre_umbral", "monto_alto"],
+)
+def test_envio_es_gratis_cuando_el_subtotal_es_25000_o_mas(subtotal):
+    assert calcular_envio(subtotal) == 0
+
+
+@pytest.mark.parametrize("subtotal", [24_999, 25_000.0], ids=["pagado", "gratis"])
+def test_calcular_envio_devuelve_un_entero(subtotal):
+    # La firma indica -> int; se verifica el tipo, no solo el valor (0.0 == 0 es True).
+    assert type(calcular_envio(subtotal)) is int
