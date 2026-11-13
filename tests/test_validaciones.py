@@ -48,3 +48,60 @@ def test_password_con_longitud_fuera_del_rango_es_invalida(longitud):
     assert len(password) == longitud
 
     assert validar_password(password) is False
+
+
+# ---------------------------------------------------------------------------
+# validar_password: reglas de composición (mayúscula, número, sin espacios)
+# Todas las contraseñas tienen una longitud válida, para aislar la regla probada.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "password",
+    ["Abcdefg1", "Shopgo2026", "Abc!@#12", "Ñandú123"],
+    ids=["minima_valida", "valida_tipica", "con_simbolos", "mayuscula_con_tilde_o_enie"],
+)
+def test_password_que_cumple_todas_las_reglas_es_valida(password):
+    assert validar_password(password) is True
+
+
+def test_password_sin_mayuscula_es_invalida():
+    assert validar_password("abcdefg1") is False
+
+
+def test_password_sin_numero_es_invalida():
+    assert validar_password("Abcdefgh") is False
+
+
+def test_password_con_numero_que_no_es_digito_ascii_es_invalida():
+    # "²" es un carácter numérico Unicode, pero no un dígito 0-9.
+    # Suposición documentada en NOTAS.md: "número" significa dígito 0-9.
+    assert validar_password("Abcdefg²") is False
+
+
+@pytest.mark.parametrize(
+    "password",
+    [" Abcdef1", "Abc def1", "Abcdef1 ", "Abc\tdef1", "Abc\ndef1"],
+    ids=["espacio_al_inicio", "espacio_en_medio", "espacio_al_final", "tabulacion", "salto_de_linea"],
+)
+def test_password_con_espacios_en_blanco_es_invalida(password):
+    assert validar_password(password) is False
+
+
+def test_password_vacia_es_invalida():
+    assert validar_password("") is False
+
+
+def test_password_compuesta_solo_por_espacios_es_invalida():
+    assert validar_password(" " * 10) is False
+
+
+@pytest.mark.parametrize(
+    "valor",
+    [None, 12345678, ["A", "b", "c", "d", "e", "f", "g", "1"]],
+    ids=["none", "entero", "lista"],
+)
+def test_password_que_no_es_texto_es_invalida_sin_lanzar_excepcion(valor):
+    # La firma promete devolver bool, así que una entrada inválida
+    # se rechaza con False en lugar de romper con TypeError.
+    assert validar_password(valor) is False
