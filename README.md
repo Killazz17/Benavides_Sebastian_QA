@@ -1,5 +1,7 @@
 # Prueba Técnica — QA Automation Mobile (ShopGo)
 
+[![Pruebas](https://github.com/Killazz17/Benavides_Sebastian_QA/actions/workflows/tests.yml/badge.svg)](https://github.com/Killazz17/Benavides_Sebastian_QA/actions/workflows/tests.yml)
+
 Solución de la prueba técnica para la pasantía de QA Automation Mobile de QXD.
 **Autor:** Sebastian Benavides Madrigal
 
