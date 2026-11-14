@@ -1,0 +1,36 @@
+# Integración continua: ejecuta la suite de pytest en cada push y pull request.
+# Las pruebas de UI (Parte 3) se saltan automáticamente porque el runner no
+# tiene servidor Appium ni emulador (ver la opción --run-ui en tests/conftest.py).
+name: Pruebas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      # Si una versión de Python falla, las demás siguen para ver el panorama completo.
+      fail-fast: false
+      matrix:
+        # Versiones admitidas por el enunciado (Python 3.10 o superior).
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v5
+
+      - name: Instalar Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar pruebas
+        run: pytest -v
